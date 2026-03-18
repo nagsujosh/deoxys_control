@@ -1,58 +1,109 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+set -euo pipefail
 
-sudo apt install build-essential cmake git libpoco-dev libeigen3-dev -y
+RED=$'\033[0;31m'
+NC=$'\033[0m'
 
-# For protoc
-sudo apt-get install autoconf automake libtool curl make g++ unzip -y
+readonly DEFAULT_LIBFRANKA_VERSION="0.9.0"
+readonly SUPPORTED_LIBFRANKA_VERSIONS=("0.8.0" "0.9.0" "0.10.0")
+readonly SPDLOG_COMMIT="ac55e60488032b9acde8940a5de099541c4515da"
+readonly PROTOBUF_VERSION="v3.13.0"
 
-# For zmq
-sudo apt-get install libzmq3-dev -y
+clone_if_missing() {
+    local repo_url="$1"
+    local target_dir="$2"
+    local clone_flags=()
 
-# download libfranka
-git clone --recursive https://github.com/frankaemika/libfranka
-cd libfranka
+    if [[ "${3:-}" == "recursive" ]]; then
+        clone_flags+=(--recursive)
+    fi
 
-echo "Which libfranka version are you going to use? (currently supporting 0.8.0 and 0.9.0, can do 0.10.0 but no guarantee)"
-read version
-echo "chose libfranka ${version}"
-if [[ "$version" != "0.8.0" && "$version" != "0.9.0" && "$version" != "0.10.0" ]]
-then
-    printf "${RED} The version ${version} won't be supported!!! \n ${NC}"
+    if [[ -d "${target_dir}/.git" ]]; then
+        echo "Using existing ${target_dir} checkout"
+        return
+    fi
+
+    git clone "${clone_flags[@]}" "${repo_url}" "${target_dir}"
+}
+
+is_supported_libfranka_version() {
+    local version="$1"
+    local supported
+    for supported in "${SUPPORTED_LIBFRANKA_VERSIONS[@]}"; do
+        if [[ "${supported}" == "${version}" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+LIBFRANKA_VERSION="${LIBFRANKA_VERSION:-}"
+if [[ -z "${LIBFRANKA_VERSION}" ]]; then
+    if [[ -t 0 ]]; then
+        echo "Which libfranka version are you going to use?"
+        echo "Supported versions: ${SUPPORTED_LIBFRANKA_VERSIONS[*]}"
+        read -r LIBFRANKA_VERSION
+    else
+        LIBFRANKA_VERSION="${DEFAULT_LIBFRANKA_VERSION}"
+        echo "LIBFRANKA_VERSION not provided; defaulting to ${LIBFRANKA_VERSION}"
+    fi
 fi
-git checkout ${version}
 
-git submodule update
-cd ..
+echo "Selected libfranka ${LIBFRANKA_VERSION}"
+if ! is_supported_libfranka_version "${LIBFRANKA_VERSION}"; then
+    printf "${RED}Warning:${NC} libfranka %s is not one of the validated versions (%s)\n" \
+        "${LIBFRANKA_VERSION}" "${SUPPORTED_LIBFRANKA_VERSIONS[*]}"
+fi
 
-# download c++ zmq wrapper
-git clone https://github.com/zeromq/zmqpp.git
+sudo apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libpoco-dev \
+    libeigen3-dev \
+    autoconf \
+    automake \
+    libtool \
+    curl \
+    make \
+    g++ \
+    unzip \
+    libzmq3-dev \
+    libreadline-dev \
+    bzip2 \
+    libmotif-dev \
+    libglfw3 \
+    python3-venv
 
-# download yaml cpp package
-git clone https://github.com/jbeder/yaml-cpp.git
+clone_if_missing "https://github.com/frankaemika/libfranka" "libfranka" recursive
+pushd libfranka >/dev/null
+git fetch --tags
+git checkout "${LIBFRANKA_VERSION}"
+git submodule update --init --recursive
+popd >/dev/null
 
-# download spdlog package
-git clone https://github.com/gabime/spdlog.git
-cd spdlog
-git checkout ac55e60488032b9acde8940a5de099541c4515da
-cd ..
+clone_if_missing "https://github.com/zeromq/zmqpp.git" "zmqpp"
+clone_if_missing "https://github.com/jbeder/yaml-cpp.git" "yaml-cpp"
 
-# download protobuf
-git clone --recursive https://github.com/protocolbuffers/protobuf.git
-cd protobuf
-git checkout v3.13.0
-git submodule update
+clone_if_missing "https://github.com/gabime/spdlog.git" "spdlog"
+pushd spdlog >/dev/null
+git checkout "${SPDLOG_COMMIT}"
+popd >/dev/null
 
-./autogen.sh
-./configure
-make
-make check
-sudo make install
-sudo ldconfig # refresh shared library cache.
+clone_if_missing "https://github.com/protocolbuffers/protobuf.git" "protobuf" recursive
+pushd protobuf >/dev/null
+git checkout "${PROTOBUF_VERSION}"
+git submodule update --init --recursive
 
-# Install other apt packages
-sudo apt install libreadline-dev -y
-sudo apt install bzip2 -y
-sudo apt install libmotif-dev libglfw3 -y
+if ! command -v protoc >/dev/null || [[ "$(protoc --version 2>/dev/null || true)" != "libprotoc 3.13.0" ]]; then
+    ./autogen.sh
+    ./configure
+    make
+    make check
+    sudo make install
+    sudo ldconfig
+else
+    echo "Found compatible protoc version; skipping protobuf source build"
+fi
+popd >/dev/null

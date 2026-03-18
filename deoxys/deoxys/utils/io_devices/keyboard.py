@@ -43,7 +43,7 @@ class Keyboard:
 
         print("")
         print_command("Keys", "Command")
-        print_command("q", "reset simulation")
+        print_command("q", "stop control session")
         print_command("spacebar", "toggle gripper (open/close)")
         print_command("w-a-s-d", "move arm horizontally in x-y plane")
         print_command("r-f", "move arm vertically")
@@ -55,7 +55,7 @@ class Keyboard:
 
     def _reset_internal_state(self):
         """
-        Resets internal state of controller, except for the reset signal.
+        Reset internal state of controller, except for the stop signal.
         """
         self.rotation = np.array([[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]])
         self.raw_drotation = np.zeros(

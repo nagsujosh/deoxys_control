@@ -2,12 +2,16 @@ pyzmq
 PyYAML
 easydict
 google-api-python-client
+protobuf>=3.19.5,<3.21
+h5py
 pybullet
 numpy
 hidapi
 glfw
 numba
+opencv-python
+pyrealsense2
+redis
 termcolor
 simplejson
 mujoco==3.1.0
-

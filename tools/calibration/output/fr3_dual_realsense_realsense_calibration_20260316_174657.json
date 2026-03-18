@@ -1,0 +1,244 @@
+{
+  "cameras": [
+    {
+      "camera_id": 0,
+      "configured_task_extrinsics": [],
+      "depth_stream": {
+        "depth_scale_m_per_unit": 0.0010000000474974513,
+        "native_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 642.24853515625,
+          "fy_px": 642.24853515625,
+          "height_px": 720,
+          "model_id": 4,
+          "model_name": "distortion.brown_conrady",
+          "ppx_px": 649.3076782226562,
+          "ppy_px": 352.5796813964844,
+          "width_px": 1280
+        },
+        "resized_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 642.24853515625,
+          "fy_px": 642.24853515625,
+          "height_px": 720,
+          "model_id": 4,
+          "model_name": "distortion.brown_conrady",
+          "ppx_px": 649.3076782226562,
+          "ppy_px": 352.5796813964844,
+          "width_px": 1280
+        }
+      },
+      "device_extrinsics": {
+        "color_to_depth": {
+          "convention": "3x3 row-major rotation plus translation in meters",
+          "rotation_row_major": [
+            0.9999911189079285,
+            8.172839443432167e-05,
+            0.004208877217024565,
+            -7.821707549737766e-05,
+            0.9999996423721313,
+            -0.0008344234665855765,
+            -0.00420894380658865,
+            0.000834086851682514,
+            0.9999908208847046
+          ],
+          "translation_m": [
+            -0.01456341054290533,
+            -0.00012176422751508653,
+            -0.0005495223449543118
+          ]
+        },
+        "depth_to_color": {
+          "convention": "3x3 row-major rotation plus translation in meters",
+          "rotation_row_major": [
+            0.9999911189079285,
+            -7.821707549737766e-05,
+            -0.00420894380658865,
+            8.172839443432167e-05,
+            0.9999996423721313,
+            0.000834086851682514,
+            0.004208877217024565,
+            -0.0008344234665855765,
+            0.9999908208847046
+          ],
+          "translation_m": [
+            0.01456560380756855,
+            0.00012016654363833368,
+            0.000488322286400944
+          ]
+        }
+      },
+      "rgb_stream": {
+        "native_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 910.6631469726562,
+          "fy_px": 910.5181274414062,
+          "height_px": 720,
+          "model_id": 2,
+          "model_name": "distortion.inverse_brown_conrady",
+          "ppx_px": 645.43017578125,
+          "ppy_px": 370.03326416015625,
+          "width_px": 1280
+        },
+        "resized_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 910.6631469726562,
+          "fy_px": 910.5181274414062,
+          "height_px": 720,
+          "model_id": 2,
+          "model_name": "distortion.inverse_brown_conrady",
+          "ppx_px": 645.43017578125,
+          "ppy_px": 370.03326416015625,
+          "width_px": 1280
+        }
+      },
+      "role": "agentview",
+      "serial_number": "999999999999"
+    },
+    {
+      "camera_id": 1,
+      "configured_task_extrinsics": [],
+      "depth_stream": {
+        "depth_scale_m_per_unit": 0.0010000000474974513,
+        "native_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 642.3697509765625,
+          "fy_px": 642.3697509765625,
+          "height_px": 720,
+          "model_id": 4,
+          "model_name": "distortion.brown_conrady",
+          "ppx_px": 643.9814453125,
+          "ppy_px": 354.63787841796875,
+          "width_px": 1280
+        },
+        "resized_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 642.3697509765625,
+          "fy_px": 642.3697509765625,
+          "height_px": 720,
+          "model_id": 4,
+          "model_name": "distortion.brown_conrady",
+          "ppx_px": 643.9814453125,
+          "ppy_px": 354.63787841796875,
+          "width_px": 1280
+        }
+      },
+      "device_extrinsics": {
+        "color_to_depth": {
+          "convention": "3x3 row-major rotation plus translation in meters",
+          "rotation_row_major": [
+            0.9999463558197021,
+            0.00804993323981762,
+            0.006517657078802586,
+            -0.00802028551697731,
+            0.9999574422836304,
+            -0.004562217276543379,
+            -0.006554105319082737,
+            0.004509699065238237,
+            0.9999683499336243
+          ],
+          "translation_m": [
+            -0.01478048786520958,
+            6.653336458839476e-05,
+            -0.0004643371794372797
+          ]
+        },
+        "depth_to_color": {
+          "convention": "3x3 row-major rotation plus translation in meters",
+          "rotation_row_major": [
+            0.9999463558197021,
+            -0.00802028551697731,
+            -0.006554105319082737,
+            0.00804993323981762,
+            0.9999574422836304,
+            0.004509699065238237,
+            0.006517657078802586,
+            -0.004562217276543379,
+            0.9999683499336243
+          ],
+          "translation_m": [
+            0.014782186597585678,
+            -0.00018719267973210663,
+            0.0003671495651360601
+          ]
+        }
+      },
+      "rgb_stream": {
+        "native_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 905.9202880859375,
+          "fy_px": 905.327880859375,
+          "height_px": 720,
+          "model_id": 2,
+          "model_name": "distortion.inverse_brown_conrady",
+          "ppx_px": 643.179443359375,
+          "ppy_px": 373.29534912109375,
+          "width_px": 1280
+        },
+        "resized_intrinsics": {
+          "distortion_coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "fx_px": 905.9202880859375,
+          "fy_px": 905.327880859375,
+          "height_px": 720,
+          "model_id": 2,
+          "model_name": "distortion.inverse_brown_conrady",
+          "ppx_px": 643.179443359375,
+          "ppy_px": 373.29534912109375,
+          "width_px": 1280
+        }
+      },
+      "role": "wrist",
+      "serial_number": "888888888888"
+    }
+  ],
+  "generated_at_local": "2026-03-16T17:46:57.717645",
+  "task": "fr3_dual_realsense"
+}

@@ -135,6 +135,7 @@ class SpaceMouse:
         self._reset_state = 0
         self.rotation = np.array([[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]])
         self._enabled = False
+        self._running = True
 
         # launch a new listener thread to listen to SpaceMouse
         self.thread = threading.Thread(target=self.run)
@@ -153,7 +154,7 @@ class SpaceMouse:
 
         print("")
         print_command("Control", "Command")
-        print_command("Right button", "reset simulation")
+        print_command("Right button", "stop teleop / finish demo")
         print_command("Left button (hold)", "close gripper")
         print_command("Move mouse laterally", "move arm horizontally in x-y plane")
         print_command("Move mouse vertically", "move arm vertically")
@@ -165,7 +166,7 @@ class SpaceMouse:
 
     def _reset_internal_state(self):
         """
-        Resets internal state of controller, except for the reset signal.
+        Reset internal state of controller, except for the stop/finish signal.
         """
         self.rotation = np.array([[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]])
         # Reset 6-DOF variables
@@ -215,8 +216,13 @@ class SpaceMouse:
 
         t_last_click = -1
 
-        while True:
-            d = self.device.read(13)
+        while self._running:
+            try:
+                d = self.device.read(13)
+            except OSError:
+                if not self._running:
+                    break
+                raise
             if d is not None and self._enabled:
 
                 if d[0] == 1:  ## readings from 6-DoF sensor
@@ -250,11 +256,20 @@ class SpaceMouse:
                     if d[1] == 0:
                         self.single_click_and_hold = False
 
-                    # right button is for reset
+                    # right button requests stop / finish in higher-level callers
                     if d[1] == 2:
                         self._reset_state = 1
                         self._enabled = False
                         self._reset_internal_state()
+
+    def close(self):
+        self._enabled = False
+        self._running = False
+        try:
+            self.device.close()
+        except OSError:
+            pass
+        self.thread.join(timeout=1.0)
 
     @property
     def control(self):

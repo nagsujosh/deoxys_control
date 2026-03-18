@@ -1,0 +1,72 @@
+name: fr3_dual_realsense
+interface_cfg: charmander.yml
+controller_type: OSC_POSE
+controller_cfg: osc-pose-controller.yml
+default_reset_preset: home_nominal
+output_root: data
+spacemouse_vendor_id: 9583
+spacemouse_product_id: 50734
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  start_managed: true
+  command:
+    - redis-server
+    - --save
+    - ""
+    - --appendonly
+    - "no"
+  freshness_timeout_sec: 1.0
+
+collection:
+  warmup_sec: 2.0
+  max_samples: 0
+  motion_threshold: 0.001
+  controller_timeout_sec: 0.2
+  state_zero_fallback: true
+  state_zero_threshold: 0.000001
+  keep_failed_runs: false
+  # Per-dimension command multipliers for the teleop action.
+  # Set a dimension to -1.0 to reproduce an "inverted" mapping on that axis.
+  action_multipliers: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  # Roles listed here are allowed to go missing during collection.
+  # The collector keeps sample alignment by inserting zero-image placeholders and
+  # writing a per-sample validity mask instead of shortening arrays.
+  optional_camera_roles: []
+
+cameras:
+  - camera_id: 0
+    role: agentview
+    serial_number: "999999999999"
+    width: 640
+    height: 480
+    fps: 30
+    resize:
+      width: 640
+      height: 480
+    require_rgb: true
+    enable_depth: true
+    require_depth: false
+    color_encoding: jpeg
+    depth_encoding: png
+    # Add calibrated world/robot-frame extrinsics here when available.
+    # Each transform should be a 4x4 homogeneous matrix stored in row-major order.
+    extrinsics: []
+  - camera_id: 1
+    role: wrist
+    serial_number: "888888888888"
+    width: 640
+    height: 480
+    fps: 30
+    resize:
+      width: 640
+      height: 480
+    require_rgb: true
+    enable_depth: true
+    require_depth: false
+    color_encoding: jpeg
+    depth_encoding: png
+    # Add calibrated wrist-camera extrinsics here when available.
+    extrinsics: []

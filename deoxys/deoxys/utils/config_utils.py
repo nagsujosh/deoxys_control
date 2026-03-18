@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import pprint
-from asyncore import file_dispatcher
 from pathlib import Path
 from typing import Type
 
@@ -75,7 +74,7 @@ def get_default_controller_config(controller_type: str) -> EasyDict:
     Returns:
         Type(EasyDict): An easy dictionary of controller configuration
     """
-    print(controller_type)
+    logger.debug("Loading default controller config for controller_type=%s", controller_type)
     if controller_type == "OSC_POSE":
         controller_cfg = YamlConfig(
             os.path.join(config_root, "osc-pose-controller.yml")

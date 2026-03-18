@@ -108,16 +108,24 @@ class FrankaInterface:
 
         # subscriber
         self._subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
+        self._subscriber.setsockopt(zmq.RCVTIMEO, 100)
+        self._subscriber.setsockopt(zmq.LINGER, 0)
         self._subscriber.connect(f"tcp://{self._ip}:{self._sub_port}")
 
         self._gripper_subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
+        self._gripper_subscriber.setsockopt(zmq.RCVTIMEO, 100)
+        self._gripper_subscriber.setsockopt(zmq.LINGER, 0)
         self._gripper_subscriber.connect(f"tcp://{self._ip}:{self._gripper_sub_port}")
+        self._publisher.setsockopt(zmq.LINGER, 0)
+        self._gripper_publisher.setsockopt(zmq.LINGER, 0)
 
         self._state_buffer = []
         self._state_buffer_idx = 0
+        self._state_receive_time_buffer = []
 
         self._gripper_state_buffer = []
         self._gripper_buffer_idx = 0
+        self._gripper_receive_time_buffer = []
 
         # control frequency
         self._control_freq = control_freq
@@ -131,6 +139,7 @@ class FrankaInterface:
 
         self.counter = 0
         self.termination = False
+        self._closing = False
 
         self._state_sub_thread = threading.Thread(target=self.get_state)
         self._state_sub_thread.daemon = True
@@ -170,18 +179,22 @@ class FrankaInterface:
             recv_kwargs = {"flags": zmq.NOBLOCK}
         else:
             recv_kwargs = {}
-        while True:
+        while not self._closing:
             try:
                 franka_robot_state = franka_robot_state_pb2.FrankaRobotStateMessage()
                 # message = self._subscriber.recv(flags=zmq.NOBLOCK)
                 message = self._subscriber.recv(**recv_kwargs)
                 franka_robot_state.ParseFromString(message)
                 self._state_buffer.append(franka_robot_state)
-            except:
-                pass
+                self._state_receive_time_buffer.append(time.time())
+            except zmq.Again:
+                continue
+            except Exception:
+                if self._closing:
+                    break
 
     def get_gripper_state(self):
-        while True:
+        while not self._closing:
             try:
                 franka_gripper_state = (
                     franka_robot_state_pb2.FrankaGripperStateMessage()
@@ -189,8 +202,12 @@ class FrankaInterface:
                 message = self._gripper_subscriber.recv()
                 franka_gripper_state.ParseFromString(message)
                 self._gripper_state_buffer.append(franka_gripper_state)
-            except:
-                pass
+                self._gripper_receive_time_buffer.append(time.time())
+            except zmq.Again:
+                continue
+            except Exception:
+                if self._closing:
+                    break
 
     def preprocess(self):
 
@@ -249,7 +266,7 @@ class FrankaInterface:
                 time.sleep(remaining_time)
             self.last_time = time.time_ns()
 
-        if self._last_controller_type != controller_type:
+        if self._last_controller_type != controller_type and not termination:
             self.preprocess()
             self._last_controller_type = controller_type
 
@@ -479,7 +496,7 @@ class FrankaInterface:
             msg_str = control_msg.SerializeToString()
             self._publisher.send(msg_str)
 
-        if self.has_gripper:
+        if self.has_gripper and not termination:
             self.gripper_control(action[self.last_gripper_dim])
 
         if self.use_visualizer and len(self._state_buffer) > 0:
@@ -524,7 +541,23 @@ class FrankaInterface:
         self.last_gripper_action = action
 
     def close(self):
+        self._closing = True
         self._state_sub_thread.join(1.0)
+        self._gripper_sub_thread.join(1.0)
+        for socket in (
+            self._publisher,
+            self._subscriber,
+            self._gripper_publisher,
+            self._gripper_subscriber,
+        ):
+            try:
+                socket.close(linger=0)
+            except Exception:
+                pass
+        try:
+            self._context.term()
+        except Exception:
+            pass
 
     @property
     def last_eef_pose(self) -> np.ndarray:
@@ -575,9 +608,11 @@ class FrankaInterface:
         """Reset internal states of FrankaInterface and clear buffers. Useful when you run multiple episodes in a single python interpretor process."""
         self._state_buffer = []
         self._state_buffer_idx = 0
+        self._state_receive_time_buffer = []
 
         self._gripper_state_buffer = []
         self._gripper_buffer_idx = 0
+        self._gripper_receive_time_buffer = []
 
         self.counter = 0
         self.termination = False
@@ -622,6 +657,18 @@ class FrankaInterface:
         if self.state_buffer_size == 0:
             return None
         return self._state_buffer[-1]
+
+    @property
+    def last_state_receive_timestamp_sec(self) -> float:
+        if self.state_buffer_size == 0:
+            return None
+        return float(self._state_receive_time_buffer[-1])
+
+    @property
+    def last_gripper_state_receive_timestamp_sec(self) -> float:
+        if self.gripper_state_buffer_size == 0:
+            return None
+        return float(self._gripper_receive_time_buffer[-1])
 
     @property
     def last_pose(self):

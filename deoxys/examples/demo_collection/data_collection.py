@@ -1,3 +1,9 @@
+"""Legacy demo-collection example.
+
+Prefer `deoxys.data collect` for the maintained teleoperation/data-pipeline
+workflow.
+"""
+
 import argparse
 import os
 import pickle
@@ -84,6 +90,7 @@ def main():
             controller_type=controller_type,
         )
         if action is None:
+            print("Received SpaceMouse stop/finish signal, ending collection loop")
             break
         robot_interface.control(
             controller_type=controller_type,
@@ -137,7 +144,7 @@ def main():
         cr_interfaces[camera_id].stop()
     robot_interface.close()
 
-    save = input("Save or not? (enter 0 or 1)")
+    save = input("Save this finished demo? (enter 0 or 1)")
     save = bool(int(save))
 
     if not save:

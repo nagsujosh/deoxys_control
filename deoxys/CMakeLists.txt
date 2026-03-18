@@ -27,7 +27,6 @@ message("${_GLIBCXX_USE_CXX11_ABI}")
 find_package(Protobuf REQUIRED)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/protobuf.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/libfranka/cmake/FindEigen3.cmake)
 
 # cmake-format: off
 #  ____            _        _            __
@@ -52,6 +51,16 @@ message("FRANKA ${BUILD_FRANKA}")
 message("DEOXYS ${BUILD_DEOXYS}")
 
 if (BUILD_FRANKA)
+  foreach(DEPENDENCY_DIR libfranka zmqpp spdlog yaml-cpp)
+    if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/${DEPENDENCY_DIR}/CMakeLists.txt")
+      message(FATAL_ERROR
+        "Missing dependency directory `${DEPENDENCY_DIR}`. "
+        "Run `LIBFRANKA_VERSION=0.9.0 ./InstallPackage` from ${CMAKE_CURRENT_LIST_DIR} "
+        "before building with `build_franka=1`."
+      )
+    endif()
+  endforeach()
+
   message("${PROTO_NAMESPACE}")  
   add_proto_cc_library(shared_protobuf
     NAMESPACE ${PROTO_NAMESPACE}

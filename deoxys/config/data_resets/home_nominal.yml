@@ -1,0 +1,21 @@
+name: home_nominal
+controller_type: JOINT_POSITION
+controller_cfg: joint-position-controller.yml
+
+# Joint targets are stored in radians.
+# This reset is intentionally kept a bit lower / more tucked than the older
+# "golden" pose so the arm does not rise into the red zone on this setup.
+joint_positions:
+  - 0.09017809387254755
+  - -0.9824203501652151
+  - 0.030509718397568178
+  - -2.694229634937343
+  - 0.057700675144720104
+  - 1.860298714876101
+  - 0.8713759453244422
+
+# Reset tolerance is measured in radians on the maximum absolute joint error.
+tolerance_rad: 0.001
+allow_jitter: false
+jitter_std_rad: 0.0
+jitter_clip_rad: 0.0

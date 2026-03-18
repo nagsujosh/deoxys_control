@@ -32,6 +32,7 @@ setup(
                 'deoxys.reset_joints=deoxys.scripts.reset_robot_joints:main',
                 'deoxys.print_robot_state=deoxys.scripts.print_robot_state:main',
                 'deoxys.velocity_example=examples.cartesian_velocity_control:main',
+                'deoxys.data=deoxys.data.cli:main',
         ]
     },
 )

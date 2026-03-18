@@ -1,6 +1,10 @@
 *~
 *pyc
 *.so*
+.conda/
+.venv/
+logs/
+/data/
 deoxys/libfranka/
 *.hdf5
 *.npz

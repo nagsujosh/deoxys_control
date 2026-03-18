@@ -1,0 +1,30 @@
+# Task extrinsics template
+# Fill these transforms only after you run a real calibration.
+# Each transform must be a 4x4 homogeneous matrix in row-major order.
+# Translation units are meters. Rotation is unitless.
+
+task: fr3_dual_realsense
+cameras:
+  - role: agentview
+    serial_number: "999999999999"
+    extrinsics:
+      # Example names you might use:
+      # - world_T_camera
+      # - robot_base_T_camera
+      # - ee_T_wrist_camera
+      - name: FILL_ME
+        reference_frame: FILL_ME
+        target_frame: FILL_ME
+        transform: []
+
+  - role: wrist
+    serial_number: "888888888888"
+    extrinsics:
+      # Example names you might use:
+      # - world_T_camera
+      # - robot_base_T_camera
+      # - ee_T_wrist_camera
+      - name: FILL_ME
+        reference_frame: FILL_ME
+        target_frame: FILL_ME
+        transform: []

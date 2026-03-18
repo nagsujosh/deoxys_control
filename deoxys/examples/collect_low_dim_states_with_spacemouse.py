@@ -1,4 +1,8 @@
-"""Teleoperating robot arm with a SpaceMouse to collect demonstration data"""
+"""Legacy example for low-dimensional SpaceMouse data collection.
+
+Prefer `deoxys.data collect` for the maintained teleoperation/data-pipeline
+workflow.
+"""
 
 import argparse
 import json
@@ -106,6 +110,7 @@ def main():
             controller_type=controller_type,
         )
         if action is None:
+            logger.info("Received SpaceMouse stop/finish signal, ending collection loop")
             break
 
         # set unused orientation dims to 0
@@ -182,7 +187,7 @@ def main():
     valid_input = False
     while not valid_input:
         try:
-            save = input("Save or not? (enter 0 or 1)")
+            save = input("Save this finished demo? (enter 0 or 1)")
             save = bool(int(save))
             valid_input = True
         except:

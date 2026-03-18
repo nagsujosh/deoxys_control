@@ -1,4 +1,10 @@
 """This is a script for kinesthetic teaching."""
+"""Legacy kinesthetic teaching helper.
+
+Prefer `deoxys.data` commands for the maintained teleoperation/data-pipeline
+workflow.
+"""
+
 import argparse
 import os
 import time
@@ -37,6 +43,7 @@ def demonstration():
         )
 
         if spacemouse_action is None:
+            print("Received SpaceMouse stop/finish signal, ending kinesthetic recording")
             break
 
         if robot_interface.check_nonzero_configuration():
